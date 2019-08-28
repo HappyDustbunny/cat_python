@@ -5,6 +5,7 @@ from tkinter.ttk import Frame
 
 # http://zetcode.com/tkinter/snake/
 # https://docs.python.org/3/library/tkinter.html
+# https://effbot.org/tkinterbook/canvas.htm
 
 class Cat(Canvas):
 
@@ -19,11 +20,12 @@ class Cat(Canvas):
         self.inGame = True
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
-        self.canvas = Canvas()
+
 
         width = self.master.winfo_screenwidth()
         height = self.master.winfo_screenheight()
         self.master.geometry(f"{width}x{height}+{0}+{0}")
+        self.canvas = Canvas(width=width, height=height)
         quitButton = Button(self, text="Quit")
         # self.pack(fill=BOTH, expand=1)
         self.after(100, self.timer_event)
