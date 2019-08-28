@@ -11,34 +11,49 @@ class Cat(Frame):
         self.pack()
 
     def initCat(self):
+        self.draw_buffer = []
+        self.inGame = True
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
         width = self.master.winfo_screenwidth()
         height = self.master.winfo_screenheight()
         self.master.geometry(f"{width}x{height}+{0}+{0}")
-        self.draw(100, 100, 888, 400)
+        self.after(100, self.timer_event())
 
-    def draw(self, x1, y1, x2, y2):
+    def draw(self):
+
         canvas = Canvas(self)
-        canvas.create_line(x1, y1, x2, y2)
+
+        for line in self.draw_buffer:
+            x1, y1, x2, y2 = line
+            canvas.create_line(x1, y1, x2, y2)
+            print(line)
+
         canvas.pack()
+
+        self.draw_buffer = []
 
     def key_pressed(self, e):
 
         key = e.keysym
 
         if key == "Left":
-            self.draw(100, 100, 200, 200)
-            print("Left")
+            self.draw_buffer.append((10, 10, 20, 20))
+            print("Left", self.draw_buffer)
         if key == "Right":
-            self.draw(200, 100, 200, 100)
+            self.draw_buffer.append((10, 10, 10, 50))
             print("Right")
         if key == "Up":
-            self.draw(500, 600, 500, 600)
+            self.draw_buffer.append((60, 60, 50, 50))
             print("Up")
         if key == "Down":
-            self.draw(600, 500, 600, 500)
+            self.draw_buffer.append((50, 50, 50, 60))
             print("Down")
+
+    def timer_event(self):
+        self.draw()
+        if self.inGame:
+            self.after(100, self.timer_event()) # The first number is time between updates in milliseconds.
 
 def main():
 
