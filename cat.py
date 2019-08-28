@@ -1,9 +1,10 @@
 
 
-from tkinter import Tk, Canvas, BOTH
+from tkinter import Tk, Canvas, BOTH, Button
 from tkinter.ttk import Frame
 
 # http://zetcode.com/tkinter/snake/
+# https://docs.python.org/3/library/tkinter.html
 
 class Cat(Canvas):
 
@@ -18,33 +19,39 @@ class Cat(Canvas):
         self.inGame = True
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
+        self.canvas = Canvas()
+
         width = self.master.winfo_screenwidth()
         height = self.master.winfo_screenheight()
         self.master.geometry(f"{width}x{height}+{0}+{0}")
+        quitButton = Button(self, text="Quit")
+        # self.pack(fill=BOTH, expand=1)
         self.after(100, self.timer_event)
 
     def draw(self):
 
-        canvas = Canvas(self)
-        canvas.delete("all")
+        # canvas = Canvas(self)
+        self.canvas
+        # canvas.delete("all")
+        print(self.canvas.canvasx(0), self.canvas.canvasy(0))
 
         for line in self.draw_buffer:
             x1, y1, x2, y2 = line
-            canvas.create_line(x1, y1, x2, y2)
-            canvas.pack()
+            self.canvas.create_line(x1, y1, x2, y2)
+            self.canvas.pack()
 
     def key_pressed(self, e):
 
         key = e.keysym
 
         if key == "Left":
-            self.draw_buffer.append((10, 10, 20, 20))
+            self.draw_buffer.append((10, 10, 20, 40))
             print("Left", self.draw_buffer)
         if key == "Right":
             self.draw_buffer.append((10, 10, 10, 50))
             print("Right")
         if key == "Up":
-            self.draw_buffer.append((60, 60, 50, 50))
+            self.draw_buffer.append((60, 60, 80, 90))
             print("Up")
         if key == "Down":
             self.draw_buffer.append((50, 50, 50, 60))
