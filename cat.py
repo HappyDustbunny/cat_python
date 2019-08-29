@@ -15,18 +15,19 @@ class Cat(Canvas):
         self.pack()
 
     def initCat(self):
-        self.draw_buffer = [(10,10,100,100), (100,100,100,200),(100,200,300,400)]
+        self.draw_buffer = [(0,0,100,100), (100,100,100,200),(100,200,300,400)]
         #self.draw_buffer = []
         self.inGame = True
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
 
-
-        width = self.master.winfo_screenwidth()
-        height = self.master.winfo_screenheight()
-        self.master.geometry(f"{width}x{height}+{0}+{0}")
-        self.canvas = Canvas(width=width, height=height)
-        quitButton = Button(self, text="Quit")
+        self.canvas = Canvas()
+        self.canvas.pack(fill='both', expand=True)
+        # width = self.master.winfo_screenwidth()
+        # height = self.master.winfo_screenheight()
+        # self.master.geometry(f"{width}x{height}+{0}+{0}")
+        # self.canvas = Canvas(width=width, height=height)
+        # quitButton = Button(self, text="Quit")
         # self.pack(fill=BOTH, expand=1)
         self.after(100, self.timer_event)
 
@@ -34,13 +35,18 @@ class Cat(Canvas):
 
         # canvas = Canvas(self)
         self.canvas
-        # canvas.delete("all")
-        print(self.canvas.canvasx(0), self.canvas.canvasy(0))
 
         for line in self.draw_buffer:
             x1, y1, x2, y2 = line
             self.canvas.create_line(x1, y1, x2, y2)
             self.canvas.pack()
+
+    def timer_event(self):
+        self.canvas.delete("all")
+        self.draw()
+        self.draw_buffer = []
+        #if self.inGame:
+        self.after(100, self.timer_event) # The first number is time between updates in milliseconds.
 
     def key_pressed(self, e):
 
@@ -62,16 +68,12 @@ class Cat(Canvas):
             self.draw_buffer = []
             print("a")
 
-    def timer_event(self):
-        self.draw()
-        #if self.inGame:
-        self.after(2000, self.timer_event) # The first number is time between updates in milliseconds.
-
 def main():
 
     root = Tk()
     root.wait_visibility(root)
     root.wm_attributes('-alpha', 0.93)
+    root.wm_attributes('-fullscreen', 1)
     # root.geometry("500x500+300+800")
     # app = Example()
     app = Cat()
