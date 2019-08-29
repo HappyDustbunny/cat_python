@@ -17,14 +17,20 @@ class Cat(Canvas):
     def initCat(self):
         self.draw_buffer = [(0,0,100,100), (100,100,100,200),(100,200,300,400)]
         #self.draw_buffer = []
-        self.inGame = True
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
 
         self.canvas = Canvas()
         self.canvas.pack(fill='both', expand=True)
-        # width = self.master.winfo_screenwidth()
-        # height = self.master.winfo_screenheight()
+
+        self.width = self.master.winfo_screenwidth()
+        self.height = self.master.winfo_screenheight()
+        print(self.width, self.height)
+
+        self.event_generate('<Motion>', warp=True, x=0, y=0)
+        off_set_x = self.winfo_pointerx() # Gives the last mouseposition before event_generate
+        off_set_y = self.winfo_pointery()
+        print(off_set_x, off_set_y)
         # self.master.geometry(f"{width}x{height}+{0}+{0}")
         # self.canvas = Canvas(width=width, height=height)
         # quitButton = Button(self, text="Quit")
@@ -45,7 +51,6 @@ class Cat(Canvas):
         self.canvas.delete("all")
         self.draw()
         self.draw_buffer = []
-        #if self.inGame:
         self.after(100, self.timer_event) # The first number is time between updates in milliseconds.
 
     def key_pressed(self, e):
@@ -65,9 +70,15 @@ class Cat(Canvas):
             self.draw_buffer.append((50, 50, 50, 60))
             print("Down")
         if key == "a":
-            self.draw_buffer = []
-            print("a")
-
+            self.event_generate('<Motion>', warp=True, x=0, y=0)
+            print(f"a {self.winfo_pointerx() - self.winfo_vrootx()} {self.winfo_pointery() - self.winfo_vrooty()}")
+        if key == "b":
+            self.event_generate('<Motion>', warp=True, x=-449, y=-452)
+            print(f"b {self.winfo_pointerx() - self.winfo_vrootx()} {self.winfo_pointery() - self.winfo_vrooty()}")
+        if key == "c":
+            self.event_generate('<Motion>', warp=True, x=831, y=268)
+            print(f"c {self.winfo_pointerx() - self.winfo_vrootx()} {self.winfo_pointery() - self.winfo_vrooty()}")
+        
 def main():
 
     root = Tk()
