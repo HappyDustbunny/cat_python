@@ -1,4 +1,4 @@
-
+from vectors import Point, Vector
 
 from tkinter import Tk, Canvas, BOTH, Button
 from tkinter.ttk import Frame
@@ -25,22 +25,18 @@ class Cat(Canvas):
 
         self.width = self.master.winfo_screenwidth()
         self.height = self.master.winfo_screenheight()
-        print(self.width, self.height)
+        print("Screen dimensions", self.width, self.height)
 
-        self.event_generate('<Motion>', warp=True, x=0, y=0)
-        off_set_x = self.winfo_pointerx() # Gives the last mouseposition before event_generate
-        off_set_y = self.winfo_pointery()
-        print(off_set_x, off_set_y)
-        # self.master.geometry(f"{width}x{height}+{0}+{0}")
-        # self.canvas = Canvas(width=width, height=height)
-        # quitButton = Button(self, text="Quit")
-        # self.pack(fill=BOTH, expand=1)
+        self.after(100, self.get_offset)
+
+    def get_offset(self):
+        # Nessecary to move to own function in order to get canvas initialised
+        self.off_set_x = self.winfo_x()
+        self.off_set_y = self.winfo_y()
+        print("Canvas offset ", self.off_set_x, self.off_set_y)
         self.after(100, self.timer_event)
 
     def draw(self):
-
-        # canvas = Canvas(self)
-        self.canvas
 
         for line in self.draw_buffer:
             x1, y1, x2, y2 = line
@@ -48,7 +44,8 @@ class Cat(Canvas):
             self.canvas.pack()
 
     def timer_event(self):
-        self.canvas.delete("all")
+
+        self.canvas.delete("all") # Clear all drawings
         self.draw()
         self.draw_buffer = []
         self.after(100, self.timer_event) # The first number is time between updates in milliseconds.
@@ -70,15 +67,25 @@ class Cat(Canvas):
             self.draw_buffer.append((50, 50, 50, 60))
             print("Down")
         if key == "a":
-            self.event_generate('<Motion>', warp=True, x=0, y=0)
-            print(f"a {self.winfo_pointerx() - self.winfo_vrootx()} {self.winfo_pointery() - self.winfo_vrooty()}")
+            xx = 1000
+            yy = 500
+            self.event_generate('<Motion>', warp=True, x=xx - self.off_set_x, y=yy - self.off_set_y)
+            print("a", self.winfo_pointerx(), self.winfo_pointery())
         if key == "b":
-            self.event_generate('<Motion>', warp=True, x=-449, y=-452)
-            print(f"b {self.winfo_pointerx() - self.winfo_vrootx()} {self.winfo_pointery() - self.winfo_vrooty()}")
+            self.event_generate('<Motion>', warp=True, x=-450, y=-757)
+            print("b", self.winfo_pointerx(), self.winfo_pointery())
         if key == "c":
             self.event_generate('<Motion>', warp=True, x=831, y=268)
-            print(f"c {self.winfo_pointerx() - self.winfo_vrootx()} {self.winfo_pointery() - self.winfo_vrooty()}")
-        
+            print("c", self.winfo_pointerx(), self.winfo_pointery())
+
+class Rhombe(object):
+
+    def __init__(self, arg):
+
+        self.arg = arg
+
+
+
 def main():
 
     root = Tk()
