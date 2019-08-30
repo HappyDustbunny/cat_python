@@ -1,5 +1,3 @@
-from vectors import Point, Vector
-
 from tkinter import Tk, Canvas, BOTH, Button
 from tkinter.ttk import Frame
 
@@ -7,16 +5,15 @@ from tkinter.ttk import Frame
 # https://docs.python.org/3/library/tkinter.html
 # https://effbot.org/tkinterbook/canvas.htm
 
-class Cat(Canvas):
+class Canv(Canvas):
 
     def __init__(self):
         super().__init__()
-        self.initCat()
+        self.initCanv()
         self.pack()
 
-    def initCat(self):
-        self.draw_buffer = [(0,0,100,100), (100,100,100,200),(100,200,300,400)]
-        #self.draw_buffer = []
+    def initCanv(self):
+        self.draw_buffer = []
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
 
@@ -33,6 +30,12 @@ class Cat(Canvas):
         # Nessecary to move to own function in order to get canvas initialised
         self.off_set_x = self.winfo_x()
         self.off_set_y = self.winfo_y()
+        self.top_right = [self.winfo_x(), 0]
+        self.top_left =  [0, 0]
+        self.bottom_right = [0, self.winfo_y()]
+        self.bottom_left = [self.winfo_x(), self.winfo_y()]
+        self.diagonal_up = subtract(self.top_right, self.bottom_left)
+        self.diagonal_down = subtract(self.top_left, self.bottom_right)
         print("Canvas offset ", self.off_set_x, self.off_set_y)
         self.after(100, self.timer_event)
 
@@ -77,14 +80,66 @@ class Cat(Canvas):
         if key == "c":
             self.event_generate('<Motion>', warp=True, x=831, y=268)
             print("c", self.winfo_pointerx(), self.winfo_pointery())
+        if key == "d":
+            Rhombe.reset()
 
-class Rhombe(object):
+class Rhombe(Canv):
 
     def __init__(self, arg):
+        self.reset()
 
-        self.arg = arg
+    def reset():
+        self.top_pt = Canv.top_left + times_scalar(0.5, Canv.diagonal_up)
+        self.bottom_pt = subtract(self.right_pt, Canv.diagonal_up)
+        self.right_pt = subtract(self.top_pt, Canv.diagonal_down)
+        self.left_pt = add(self.bottom_pt, Canv.diagonal_down)
+        self.mid_top_right_pt = Canv.top_right
+        self.mid_top_left_pt = Canv.top_left
+        self.mid_bottom_right_pt = Canv.bottom_right
+        self.mid_bottom_left_pt = Canv.bottom_left
+        self.center_pt = add(Canv.bottom_left, times_scalar(0.5, Canv.diagonal_up))
+        self.zoom = 0
 
+        Canv.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
+                            self.top_pt, self.mid_top_right_pt, \
+                            self.mid_bottom_left_pt, self.bottom_pt, \
+                            self.mid_bottom_right_pt, self.mid_top_left_pt]
 
+    def contract_to(left_point):
+        self.new_top = self.left_point + times_scalar(0.5, subtract(self.top_pt, self.left_pt))
+        self.new_bottom = self.left_point + times_scalar(0.5, subtract(self.bottom_pt, self.left_pt))
+        self.new_right = self.left_point + times_scalar(0.5, subtract(self.right_pt, self.left_pt))
+
+        self.top_pt = self.new_top
+        self.bottom_pt = self.new_bottom
+        self.right_pt = self.new_right
+        self.left_pt = left_point
+        self.mid_top_right_pt = add(self.new_right, times_scalar(0.5, subtract(self.new_top, self.new_right)))
+        self.mid_top_left_pt = add(left_point, times_scalar(0.5, subtract(self.new_top, left_point)))
+        self.mid_bottom_right_pt = add(self.new_right, times_scalar(0.5, subtract(self.new_bottom, self.new_right)))
+        self.mid_bottom_left_pt =  add(left_point, times_scalar(0.5, subtract(self.new_bottom, left_point)))
+        self.center_pt = add(left_point, times_scalar(0.5, subtract(self.new_right, left_point)))
+        self.zoom += 1
+
+        Canv.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
+                            self.top_pt, self.mid_top_right_pt, \
+                            self.mid_bottom_left_pt, self.bottom_pt, \
+                            self.mid_bottom_right_pt, self.mid_top_left_pt]
+
+        if self.zoom > 10:
+            reset()
+
+def add(a, b):
+    # Vector addition
+    return [a[0] + b[0], a[1] + b[1]]
+
+def subtract(a, b):
+    # Vector subtraction
+    return [a[0] - b[0], a[1] - b[1]]
+
+def times_scalar(t, a):
+    # Scalar times Vector
+    return [t * a[0], t * a[1]]
 
 def main():
 
@@ -94,7 +149,7 @@ def main():
     root.wm_attributes('-fullscreen', 1)
     # root.geometry("500x500+300+800")
     # app = Example()
-    app = Cat()
+    app = Canv()
 
     root.mainloop()
 
