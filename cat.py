@@ -13,7 +13,7 @@ class Canv(Canvas):
         self.pack()
 
     def initCanv(self):
-        self.draw_buffer = [(100, 100, 400, 800)]
+        self.draw_buffer = []
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
 
@@ -36,40 +36,53 @@ class Canv(Canvas):
         self.bottom_right = [self.width, self.height]
         self.diagonal_up = subtract(self.bottom_left, self.top_right)
         self.diagonal_down = subtract(self.top_left, self.bottom_right)
+        self.reset()
         print("Canvas offset ", self.off_set_x, self.off_set_y)
-        print("Bzz", self.top_left, self.top_right, self.bottom_left, self.bottom_right, self.diagonal_up, self.diagonal_down)
+        print("Bzz", self.top_left, self.top_right, self.bottom_left, \
+              self.bottom_right, self.diagonal_up, self.diagonal_down)
         self.after(100, self.timer_event)
 
     def draw(self):
 
-        for line in self.draw_buffer:
-            x1, y1, x2, y2 = line
-            self.canvas.create_line(x1, y1, x2, y2)
+        for i, end in enumerate(self.draw_buffer):
+            if i == 0:
+                start = end
+                continue
+            self.canvas.create_line(start[0], start[1], end[0], end[1])
+            # self.canvas.create_line(start[0] - self.off_set_x, start[1] - \
+            #                         self.off_set_y, end[0] - self.off_set_x, \
+            #                         end[1] - self.off_set_y)
             self.canvas.pack()
+            start = end
 
     def timer_event(self):
 
-        self.canvas.delete("all") # Clear all drawings
+        # self.canvas.delete("all") # Clear all drawings
         self.draw()
-        self.draw_buffer = []
+        # self.draw_buffer = []
         self.after(100, self.timer_event) # The first number is time between updates in milliseconds.
 
     def key_pressed(self, e):
 
         key = e.keysym
+        print("You pressed", key)
 
         if key == "Left":
-            self.draw_buffer.append((10, 10, 20, 40))
+            self.contract_to(self.left_pt)
             print("Left", self.draw_buffer)
         if key == "Right":
-            self.draw_buffer.append((10, 10, 10, 50))
+            self.contract_to(self.center_pt)
             print("Right")
         if key == "Up":
-            self.draw_buffer.append((60, 60, 80, 90))
+            self.contract_to(self.mid_top_left_pt)
             print("Up")
         if key == "Down":
-            self.draw_buffer.append((50, 50, 50, 60))
+            self.contract_to(self.mid_bottom_left_pt)
             print("Down")
+        if key == "e":
+            self.event_generate('<Motion>', warp=True, x=self.center_pt[0] - \
+                                self.off_set_x, y=self.center_pt[1] - self.off_set_y)
+            print("Space")
         if key == "a":
             xx = 1000
             yy = 500
@@ -83,7 +96,7 @@ class Canv(Canvas):
             print("c", self.winfo_pointerx(), self.winfo_pointery())
         if key == "d":
             self.reset()
-            print("d", self.draw_buffer)
+            # print("d", self.draw_buffer)
 
 #
 # class Rhombe(Canv):
@@ -95,11 +108,9 @@ class Canv(Canvas):
 
     def reset(self):
         self.top_pt = add(self.top_left, times_scalar(-0.5, self.diagonal_up))
-        print("self.top_left, self.diagonal_up, self.top_pt", self.top_left, self.diagonal_up, self.top_pt)
         self.right_pt = subtract(self.top_pt, self.diagonal_down)
-        self.bottom_pt = subtract(self.right_pt, self.diagonal_up)
+        self.bottom_pt = add(self.right_pt, self.diagonal_up)
         self.left_pt = add(self.bottom_pt, self.diagonal_down)
-        print("Blip", self.top_left, self.diagonal_up, self.diagonal_down, self.top_pt, self.left_pt)
         self.mid_top_right_pt = self.top_right
         self.mid_top_left_pt = self.top_left
         self.mid_bottom_right_pt = self.bottom_right
@@ -114,9 +125,9 @@ class Canv(Canvas):
         print("Resat", self.draw_buffer)
 
     def contract_to(self, left_point):
-        self.new_top = add(self.left_point, times_scalar(0.5, subtract(self.top_pt, self.left_pt)))
-        self.new_bottom = add(self.left_point, times_scalar(0.5, subtract(self.bottom_pt, self.left_pt)))
-        self.new_right = add(self.left_point, times_scalar(0.5, subtract(self.right_pt, self.left_pt)))
+        self.new_top = add(left_point, times_scalar(0.5, subtract(self.top_pt, self.left_pt)))
+        self.new_bottom = add(left_point, times_scalar(0.5, subtract(self.bottom_pt, self.left_pt)))
+        self.new_right = add(left_point, times_scalar(0.5, subtract(self.right_pt, self.left_pt)))
 
         self.top_pt = self.new_top
         self.bottom_pt = self.new_bottom
@@ -134,8 +145,10 @@ class Canv(Canvas):
                             self.mid_bottom_left_pt, self.bottom_pt, \
                             self.mid_bottom_right_pt, self.mid_top_left_pt]
 
+        print("Contracted to", self.draw_buffer)
+
         if self.zoom > 10:
-            reset()
+            self.reset()
 
 def add(a, b):
     # Vector addition
