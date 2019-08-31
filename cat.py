@@ -13,7 +13,7 @@ class Canv(Canvas):
         self.pack()
 
     def initCanv(self):
-        self.draw_buffer = []
+        self.draw_buffer = [(100, 100, 400, 800)]
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
 
@@ -30,13 +30,14 @@ class Canv(Canvas):
         # Nessecary to move to own function in order to get canvas initialised
         self.off_set_x = self.winfo_x()
         self.off_set_y = self.winfo_y()
-        self.top_right = [self.winfo_x(), 0]
+        self.top_right = [self.width, 0]
         self.top_left =  [0, 0]
-        self.bottom_right = [0, self.winfo_y()]
-        self.bottom_left = [self.winfo_x(), self.winfo_y()]
-        self.diagonal_up = subtract(self.top_right, self.bottom_left)
+        self.bottom_left = [0, self.height]
+        self.bottom_right = [self.width, self.height]
+        self.diagonal_up = subtract(self.bottom_left, self.top_right)
         self.diagonal_down = subtract(self.top_left, self.bottom_right)
         print("Canvas offset ", self.off_set_x, self.off_set_y)
+        print("Bzz", self.top_left, self.top_right, self.bottom_left, self.bottom_right, self.diagonal_up, self.diagonal_down)
         self.after(100, self.timer_event)
 
     def draw(self):
@@ -81,34 +82,41 @@ class Canv(Canvas):
             self.event_generate('<Motion>', warp=True, x=831, y=268)
             print("c", self.winfo_pointerx(), self.winfo_pointery())
         if key == "d":
-            Rhombe.reset()
+            self.reset()
+            print("d", self.draw_buffer)
 
-class Rhombe(Canv):
+#
+# class Rhombe(Canv):
+#
+#     def __init__(self, arg):
+#         super().__init__()
+#         self.reset()
 
-    def __init__(self, arg):
-        self.reset()
 
-    def reset():
-        self.top_pt = Canv.top_left + times_scalar(0.5, Canv.diagonal_up)
-        self.bottom_pt = subtract(self.right_pt, Canv.diagonal_up)
-        self.right_pt = subtract(self.top_pt, Canv.diagonal_down)
-        self.left_pt = add(self.bottom_pt, Canv.diagonal_down)
-        self.mid_top_right_pt = Canv.top_right
-        self.mid_top_left_pt = Canv.top_left
-        self.mid_bottom_right_pt = Canv.bottom_right
-        self.mid_bottom_left_pt = Canv.bottom_left
-        self.center_pt = add(Canv.bottom_left, times_scalar(0.5, Canv.diagonal_up))
+    def reset(self):
+        self.top_pt = add(self.top_left, times_scalar(-0.5, self.diagonal_up))
+        print("self.top_left, self.diagonal_up, self.top_pt", self.top_left, self.diagonal_up, self.top_pt)
+        self.right_pt = subtract(self.top_pt, self.diagonal_down)
+        self.bottom_pt = subtract(self.right_pt, self.diagonal_up)
+        self.left_pt = add(self.bottom_pt, self.diagonal_down)
+        print("Blip", self.top_left, self.diagonal_up, self.diagonal_down, self.top_pt, self.left_pt)
+        self.mid_top_right_pt = self.top_right
+        self.mid_top_left_pt = self.top_left
+        self.mid_bottom_right_pt = self.bottom_right
+        self.mid_bottom_left_pt = self.bottom_left
+        self.center_pt = add(self.bottom_left, times_scalar(0.5, self.diagonal_up))
         self.zoom = 0
 
-        Canv.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
+        self.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
                             self.top_pt, self.mid_top_right_pt, \
                             self.mid_bottom_left_pt, self.bottom_pt, \
                             self.mid_bottom_right_pt, self.mid_top_left_pt]
+        print("Resat", self.draw_buffer)
 
-    def contract_to(left_point):
-        self.new_top = self.left_point + times_scalar(0.5, subtract(self.top_pt, self.left_pt))
-        self.new_bottom = self.left_point + times_scalar(0.5, subtract(self.bottom_pt, self.left_pt))
-        self.new_right = self.left_point + times_scalar(0.5, subtract(self.right_pt, self.left_pt))
+    def contract_to(self, left_point):
+        self.new_top = add(self.left_point, times_scalar(0.5, subtract(self.top_pt, self.left_pt)))
+        self.new_bottom = add(self.left_point, times_scalar(0.5, subtract(self.bottom_pt, self.left_pt)))
+        self.new_right = add(self.left_point, times_scalar(0.5, subtract(self.right_pt, self.left_pt)))
 
         self.top_pt = self.new_top
         self.bottom_pt = self.new_bottom
@@ -121,7 +129,7 @@ class Rhombe(Canv):
         self.center_pt = add(left_point, times_scalar(0.5, subtract(self.new_right, left_point)))
         self.zoom += 1
 
-        Canv.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
+        self.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
                             self.top_pt, self.mid_top_right_pt, \
                             self.mid_bottom_left_pt, self.bottom_pt, \
                             self.mid_bottom_right_pt, self.mid_top_left_pt]
