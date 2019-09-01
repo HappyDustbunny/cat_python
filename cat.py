@@ -17,14 +17,14 @@ class Canv(Canvas):
         self.draw_buffer = []
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
-        self.bind("Button1", self.callback)
-
-        self.canvas = Canvas()
-        self.canvas.pack(fill='both', expand=True)
 
         self.width = self.master.winfo_screenwidth()
         self.height = self.master.winfo_screenheight()
         print("Screen dimensions", self.width, self.height)
+
+        self.canvas = Canvas(width=self.width, height=self.height, bg='blue')
+        # self.canvas = Canvas(bg='blue')  # Makes mouse placement work
+        self.canvas.pack(fill='both', expand=True)
 
         self.after(100, self.get_offset)
 
@@ -40,8 +40,6 @@ class Canv(Canvas):
         self.diagonal_down = subtract(self.top_left, self.bottom_right)
         self.reset()
         print("Canvas offset ", self.off_set_x, self.off_set_y)
-        print("Bzz", self.top_left, self.top_right, self.bottom_left,
-              self.bottom_right, self.diagonal_up, self.diagonal_down)
         self.after(100, self.timer_event)
 
     def draw(self):
@@ -166,12 +164,6 @@ class Canv(Canvas):
         if self.zoom > 10:
             self.reset()
 
-    def callback(event):
-        canvas = event.widget
-        x = canvas.canvasx(event.x)
-        y = canvas.canvasy(event.y)
-        print(canvas.find_closest(x, y))
-
 
 def add(a, b):
     # Vector addition
@@ -192,8 +184,9 @@ def main():
 
     root = Tk()
     root.wait_visibility(root)
-    root.wm_attributes('-alpha', 0.93)
+    root.wm_attributes('-alpha', 0.13)
     root.wm_attributes('-fullscreen', 1)
+
     # root.geometry("500x500+300+800")
     # app = Example()
     app = Canv()
