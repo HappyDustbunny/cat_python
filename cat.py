@@ -1,5 +1,5 @@
-from tkinter import Tk, Canvas, BOTH
-from tkinter.ttk import Frame
+from tkinter import Tk, Canvas  # , BOTH
+# from tkinter.ttk import Frame
 
 # http://zetcode.com/tkinter/snake/
 # https://docs.python.org/3/library/tkinter.html
@@ -17,6 +17,7 @@ class Canv(Canvas):
         self.draw_buffer = []
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
+        self.bind("Button1", self.callback)
 
         self.canvas = Canvas()
         self.canvas.pack(fill='both', expand=True)
@@ -90,13 +91,12 @@ class Canv(Canvas):
                                 x=self.center_pt[0] - self.off_set_x,
                                 y=self.center_pt[1] - self.off_set_y)
             print("e center", self.center_pt[0], self.center_pt[1])
-            print("e center - offset", self.center_pt[0] - self.off_set_x,
-                  self.center_pt[1] - self.off_set_y)
             self.reset()
         if key == "a":
             xx = 1000
             yy = 500
-            self.event_generate('<Motion>', warp=True, x=xx - self.off_set_x,
+            self.event_generate('<Motion>', warp=True,
+                                x=xx - self.off_set_x,
                                 y=yy - self.off_set_y)
             print("a", self.winfo_pointerx(), self.winfo_pointery())
         if key == "b":
@@ -122,41 +122,55 @@ class Canv(Canvas):
         self.mid_top_left_pt = self.top_left
         self.mid_bottom_right_pt = self.bottom_right
         self.mid_bottom_left_pt = self.bottom_left
-        self.center_pt = add(self.bottom_left, times_scalar(-0.5, self.diagonal_up))
+        self.center_pt = add(self.bottom_left,
+                             times_scalar(-0.5, self.diagonal_up))
         self.zoom = 0
 
-        # self.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
-        #                     self.top_pt, self.mid_top_right_pt, \
-        #                     self.mid_bottom_left_pt, self.bottom_pt, \
-        #                     self.mid_bottom_right_pt, self.mid_top_left_pt]
-        # print("Resat", self.draw_buffer)
-
     def contract_to(self, left_point):
-        self.new_top = add(left_point, times_scalar(0.5, subtract(self.top_pt, self.left_pt)))
-        self.new_bottom = add(left_point, times_scalar(0.5, subtract(self.bottom_pt, self.left_pt)))
-        self.new_right = add(left_point, times_scalar(0.5, subtract(self.right_pt, self.left_pt)))
-        print("t b r", self.new_top, self.new_bottom, self.new_right, left_point)
+        self.new_top = add(left_point,
+                           times_scalar(0.5, subtract(self.top_pt,
+                                                      self.left_pt)))
+        self.new_bottom = add(left_point,
+                              times_scalar(0.5, subtract(self.bottom_pt,
+                                                         self.left_pt)))
+        self.new_right = add(left_point,
+                             times_scalar(0.5, subtract(self.right_pt,
+                                                        self.left_pt)))
 
         self.top_pt = self.new_top
         self.bottom_pt = self.new_bottom
         self.right_pt = self.new_right
         self.left_pt = left_point
-        self.mid_top_right_pt = add(self.new_right, times_scalar(0.5, subtract(self.new_top, self.new_right)))
-        self.mid_top_left_pt = add(left_point, times_scalar(0.5, subtract(self.new_top, left_point)))
-        self.mid_bottom_right_pt = add(self.new_right, times_scalar(0.5, subtract(self.new_bottom, self.new_right)))
-        self.mid_bottom_left_pt =  add(left_point, times_scalar(0.5, subtract(self.new_bottom, left_point)))
-        self.center_pt = add(left_point, times_scalar(0.5, subtract(self.new_right, left_point)))
+        self.mid_top_right_pt = add(self.new_right,
+                                    times_scalar(0.5,
+                                                 subtract(self.new_top,
+                                                          self.new_right)))
+        self.mid_top_left_pt = add(left_point,
+                                   times_scalar(0.5,
+                                                subtract(self.new_top,
+                                                         left_point)))
+        self.mid_bottom_right_pt = add(self.new_right,
+                                       times_scalar(0.5,
+                                                    subtract(self.new_bottom,
+                                                             self.new_right)))
+        self.mid_bottom_left_pt = add(left_point,
+                                      times_scalar(0.5,
+                                                   subtract(self.new_bottom,
+                                                            left_point)))
+        self.center_pt = add(left_point,
+                             times_scalar(0.5,
+                                          subtract(self.new_right,
+                                                   left_point)))
         self.zoom += 1
-        #
-        # self.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt, self.left_pt, \
-        #                     self.top_pt, self.mid_top_right_pt, \
-        #                     self.mid_bottom_left_pt, self.bottom_pt, \
-        #                     self.mid_bottom_right_pt, self.mid_top_left_pt]
-
-        # print("Contracted to", self.draw_buffer)
 
         if self.zoom > 10:
             self.reset()
+
+    def callback(event):
+        canvas = event.widget
+        x = canvas.canvasx(event.x)
+        y = canvas.canvasy(event.y)
+        print(canvas.find_closest(x, y))
 
 
 def add(a, b):
@@ -182,7 +196,8 @@ def main():
     root.wm_attributes('-fullscreen', 1)
     # root.geometry("500x500+300+800")
     # app = Example()
-    # app = Canv()
+    app = Canv()
+    app.config(scrollregion=app.bbox('all'))
 
     root.mainloop()
 
