@@ -48,28 +48,26 @@ class Canv(Canvas):
             if i == 0:
                 start = end
                 continue
-            self.canvas.create_line(start[0], start[1], end[0], end[1])
+            self.canvas.create_line(start[0], start[1], end[0], end[1], width=2, fill="red")
             # self.canvas.create_line(start[0] - self.off_set_x, start[1] - \
             #                         self.off_set_y, end[0] - self.off_set_x, \
             #                         end[1] - self.off_set_y)
-            self.canvas.pack()
+            self.canvas.pack(side='top', fill='both', expand=True)
             start = end
 
     def timer_event(self):
 
-        # self.canvas.delete("all") # Clear all drawings
         self.draw()
-        # self.draw_buffer = []
+
         self.after(100, self.timer_event) # The first number is time between updates in milliseconds.
 
     def key_pressed(self, e):
 
         key = e.keysym
-        print("You pressed", key)
 
         if key == "Left":
             self.contract_to(self.left_pt)
-            print("Left", self.draw_buffer)
+            print("Left")
         if key == "Right":
             self.contract_to(self.center_pt)
             print("Right")
@@ -82,7 +80,9 @@ class Canv(Canvas):
         if key == "e":
             self.event_generate('<Motion>', warp=True, x=self.center_pt[0] - \
                                 self.off_set_x, y=self.center_pt[1] - self.off_set_y)
-            print("Space")
+            print("e center", self.center_pt[0], self.center_pt[1])
+            print("e center - offset", self.center_pt[0] - self.off_set_x, self.center_pt[1] - self.off_set_y)
+            self.reset()
         if key == "a":
             xx = 1000
             yy = 500
@@ -98,15 +98,9 @@ class Canv(Canvas):
             self.reset()
             # print("d", self.draw_buffer)
 
-#
-# class Rhombe(Canv):
-#
-#     def __init__(self, arg):
-#         super().__init__()
-#         self.reset()
-
-
     def reset(self):
+        self.canvas.delete("all")
+
         self.top_pt = add(self.top_left, times_scalar(-0.5, self.diagonal_up))
         self.right_pt = subtract(self.top_pt, self.diagonal_down)
         self.bottom_pt = add(self.right_pt, self.diagonal_up)
@@ -122,7 +116,7 @@ class Canv(Canvas):
                             self.top_pt, self.mid_top_right_pt, \
                             self.mid_bottom_left_pt, self.bottom_pt, \
                             self.mid_bottom_right_pt, self.mid_top_left_pt]
-        print("Resat", self.draw_buffer)
+        # print("Resat", self.draw_buffer)
 
     def contract_to(self, left_point):
         self.new_top = add(left_point, times_scalar(0.5, subtract(self.top_pt, self.left_pt)))
@@ -145,7 +139,7 @@ class Canv(Canvas):
                             self.mid_bottom_left_pt, self.bottom_pt, \
                             self.mid_bottom_right_pt, self.mid_top_left_pt]
 
-        print("Contracted to", self.draw_buffer)
+        # print("Contracted to", self.draw_buffer)
 
         if self.zoom > 10:
             self.reset()
