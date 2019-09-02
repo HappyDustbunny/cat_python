@@ -22,7 +22,6 @@ class Canv(Canvas):
         self.height = self.master.winfo_screenheight()
         print("Screen dimensions", self.width, self.height)
         self.mouse_xy = [self.width/2, self.height/2]
-        # self.bind_all("<space>", self.reset())
 
         self.canvas = Canvas(width=self.width - 25, height=self.height - 25,
                              bg='blue')
@@ -59,7 +58,7 @@ class Canv(Canvas):
                 start = end
                 continue
             self.canvas.create_line(start[0], start[1], end[0], end[1],
-                                    width=2, fill="red")
+                                    width=2, fill="red", dash=(8, 8))
             # self.canvas.create_line(start[0] - self.off_set_x, start[1] - \
             #                         self.off_set_y, end[0] - self.off_set_x,
             #                         end[1] - self.off_set_y)
@@ -130,6 +129,8 @@ class Canv(Canvas):
                             y=self.mouse_xy[1] - self.off_set_y)
 
     def contract_to(self, left_point):
+        self.canvas.delete("all")
+
         self.new_top = add(left_point,
                            times_scalar(0.5, subtract(self.top_pt,
                                                       self.left_pt)))
@@ -190,7 +191,7 @@ def main():
 
     root = Tk()
     root.wait_visibility(root)
-    root.wm_attributes('-alpha', 0.13)
+    root.wm_attributes('-alpha', 0.3)
     root.wm_attributes('-fullscreen', 1)
 
     app = Canv()
