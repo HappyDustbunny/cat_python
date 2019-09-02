@@ -21,9 +21,13 @@ class Canv(Canvas):
         self.width = self.master.winfo_screenwidth()
         self.height = self.master.winfo_screenheight()
         print("Screen dimensions", self.width, self.height)
+        self.mouse_xy = [self.width/2, self.height/2]
+        # self.bind_all("<space>", self.reset())
 
-        self.canvas = Canvas(width=self.width, height=self.height, bg='blue')
-        # self.canvas = Canvas(bg='blue')  # Makes mouse placement work
+        self.canvas = Canvas(width=self.width - 25, height=self.height - 25,
+                             bg='blue')
+        # Mouse placement stop working if the canvas is fullscreen. Go figure.
+
         self.canvas.pack(fill='both', expand=True)
 
         self.after(100, self.get_offset)
@@ -38,6 +42,7 @@ class Canv(Canvas):
         self.bottom_right = [self.width, self.height]
         self.diagonal_up = subtract(self.bottom_left, self.top_right)
         self.diagonal_down = subtract(self.top_left, self.bottom_right)
+        self.upstart = 1
         self.reset()
         print("Canvas offset ", self.off_set_x, self.off_set_y)
         self.after(100, self.timer_event)
@@ -72,40 +77,36 @@ class Canv(Canvas):
 
         key = e.keysym
 
-        if key == "Left":
+        if key == "Left" or key == "a":
             self.contract_to(self.left_pt)
             print("Left")
-        if key == "Right":
+        if key == "Right" or key == "d":
             self.contract_to(self.center_pt)
             print("Right")
-        if key == "Up":
+        if key == "Up" or key == "w":
             self.contract_to(self.mid_top_left_pt)
             print("Up")
-        if key == "Down":
+        if key == "Down" or key == "s":
             self.contract_to(self.mid_bottom_left_pt)
             print("Down")
-        if key == "e":
-            self.event_generate('<Motion>', warp=True,
-                                x=self.center_pt[0] - self.off_set_x,
-                                y=self.center_pt[1] - self.off_set_y)
-            print("e center", self.center_pt[0], self.center_pt[1])
+        if key == "e" or key == "q":
             self.reset()
-        if key == "a":
-            xx = 1000
-            yy = 500
-            self.event_generate('<Motion>', warp=True,
-                                x=xx - self.off_set_x,
-                                y=yy - self.off_set_y)
-            print("a", self.winfo_pointerx(), self.winfo_pointery())
-        if key == "b":
-            self.event_generate('<Motion>', warp=True, x=-450, y=-757)
-            print("b", self.winfo_pointerx(), self.winfo_pointery())
-        if key == "c":
-            self.event_generate('<Motion>', warp=True, x=831, y=268)
-            print("c", self.winfo_pointerx(), self.winfo_pointery())
-        if key == "d":
-            self.reset()
-            # print("d", self.draw_buffer)
+        # if key == "a":
+        #     xx = 1000
+        #     yy = 500
+        #     self.event_generate('<Motion>', warp=True,
+        #                         x=xx - self.off_set_x,
+        #                         y=yy - self.off_set_y)
+        #     print("a", self.winfo_pointerx(), self.winfo_pointery())
+        # if key == "b":
+        #     self.event_generate('<Motion>', warp=True, x=-450, y=-757)
+        #     print("b", self.winfo_pointerx(), self.winfo_pointery())
+        # if key == "c":
+        #     self.event_generate('<Motion>', warp=True, x=831, y=268)
+        #     print("c", self.winfo_pointerx(), self.winfo_pointery())
+        # if key == "d":
+        #     self.reset()
+        #     # print("d", self.draw_buffer)
         if key == '<space>':
             print("Yay")
 
@@ -123,6 +124,10 @@ class Canv(Canvas):
         self.center_pt = add(self.bottom_left,
                              times_scalar(-0.5, self.diagonal_up))
         self.zoom = 0
+
+        self.event_generate('<Motion>', warp=True,
+                            x=self.mouse_xy[0] - self.off_set_x,
+                            y=self.mouse_xy[1] - self.off_set_y)
 
     def contract_to(self, left_point):
         self.new_top = add(left_point,
@@ -159,9 +164,10 @@ class Canv(Canvas):
                              times_scalar(0.5,
                                           subtract(self.new_right,
                                                    left_point)))
+        self.mouse_xy = self.center_pt
         self.zoom += 1
 
-        if self.zoom > 10:
+        if self.zoom > 8:
             self.reset()
 
 
@@ -187,8 +193,6 @@ def main():
     root.wm_attributes('-alpha', 0.13)
     root.wm_attributes('-fullscreen', 1)
 
-    # root.geometry("500x500+300+800")
-    # app = Example()
     app = Canv()
     app.config(scrollregion=app.bbox('all'))
 
