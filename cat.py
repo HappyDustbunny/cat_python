@@ -23,7 +23,7 @@ class Canv(Canvas):
         print("Screen dimensions", self.width, self.height)
         self.mouse_xy = [self.width/2, self.height/2]
 
-        self.canvas = Canvas(width=self.width - 25, height=self.height - 25,
+        self.canvas = Canvas(width=self.width - 10, height=self.height - 10,
                              bg='light blue')
         # Mouse placement stop working if the canvas is fullscreen. Go figure.
 
@@ -32,7 +32,12 @@ class Canv(Canvas):
         self.after(100, self.get_offset)
 
     def get_offset(self):
-        # Nessecary to move to own function in order to get canvas initialised
+        """
+        Get offset neede to place mouse pointer.
+
+        Canvas has to initialised, so this can't be in initCanv.
+        """
+
         self.off_set_x = self.winfo_x()
         self.off_set_y = self.winfo_y()
         self.top_right = [self.width, 0]
@@ -47,6 +52,7 @@ class Canv(Canvas):
         self.after(100, self.timer_event)
 
     def draw(self):
+        """ Draw rhombe from corners and middle of sides """
 
         self.draw_buffer = [self.top_pt, self.right_pt, self.bottom_pt,
                             self.left_pt, self.top_pt, self.mid_top_right_pt,
@@ -59,9 +65,7 @@ class Canv(Canvas):
                 continue
             self.canvas.create_line(start[0], start[1], end[0], end[1],
                                     width=2, fill="red", dash=(8, 8))
-            # self.canvas.create_line(start[0] - self.off_set_x, start[1] - \
-            #                         self.off_set_y, end[0] - self.off_set_x,
-            #                         end[1] - self.off_set_y)
+
             self.canvas.pack(side='top', fill='both', expand=True)
             start = end
 
@@ -77,11 +81,11 @@ class Canv(Canvas):
         key = e.keysym
 
         if key == "Left" or key == "a":
-            if self.left_pt[0] >= 0 or self.zoom < 1:
+            if self.left_pt[0] >= 0 or self.zoom < 1:  # Stay on screen...
                 self.contract_to(self.left_pt)
                 print("Left")
         if key == "Right" or key == "d":
-            if self.right_pt[0] <= self.width or self.zoom < 1:
+            if self.right_pt[0] <= self.width or self.zoom < 1:  # Excpt 1 time
                 self.contract_to(self.center_pt)
                 print("Right")
         if key == "Up" or key == "w":
@@ -94,26 +98,11 @@ class Canv(Canvas):
                 print("Down")
         if key == "e" or key == "q":
             self.reset()
-        # if key == "a":
-        #     xx = 1000
-        #     yy = 500
-        #     self.event_generate('<Motion>', warp=True,
-        #                         x=xx - self.off_set_x,
-        #                         y=yy - self.off_set_y)
-        #     print("a", self.winfo_pointerx(), self.winfo_pointery())
-        # if key == "b":
-        #     self.event_generate('<Motion>', warp=True, x=-450, y=-757)
-        #     print("b", self.winfo_pointerx(), self.winfo_pointery())
-        # if key == "c":
-        #     self.event_generate('<Motion>', warp=True, x=831, y=268)
-        #     print("c", self.winfo_pointerx(), self.winfo_pointery())
-        # if key == "d":
-        #     self.reset()
-        #     # print("d", self.draw_buffer)
         if key == '<space>':
             print("Yay")
 
     def reset(self):
+        """ Clear canvas. Set corners and midpoint for screenfilling rhombe"""
         self.canvas.delete("all")
 
         self.top_pt = add(self.top_left, times_scalar(-0.5, self.diagonal_up))
@@ -128,11 +117,13 @@ class Canv(Canvas):
                              times_scalar(-0.5, self.diagonal_up))
         self.zoom = 0
 
-        self.event_generate('<Motion>', warp=True,
+        self.event_generate('<Motion>', warp=True,  # Place mouse pointer
                             x=self.mouse_xy[0] - self.off_set_x,
                             y=self.mouse_xy[1] - self.off_set_y)
 
     def contract_to(self, left_point):
+        """ Contract rhombe to the quarter rhombe definde by the left point """
+
         self.canvas.delete("all")
 
         self.new_top = add(left_point,
@@ -144,7 +135,6 @@ class Canv(Canvas):
         self.new_right = add(left_point,
                              times_scalar(0.5, subtract(self.right_pt,
                                                         self.left_pt)))
-
         self.top_pt = self.new_top
         self.bottom_pt = self.new_bottom
         self.right_pt = self.new_right
@@ -170,24 +160,27 @@ class Canv(Canvas):
                                           subtract(self.new_right,
                                                    left_point)))
         self.mouse_xy = self.center_pt
-        self.zoom += 1
 
+        self.zoom += 1  # Place pointer if the rhombe is only a few pixels
         if self.zoom > 8:
             self.reset()
 
 
 def add(a, b):
-    # Vector addition
+    """ Add vectors a and b """
+
     return [a[0] + b[0], a[1] + b[1]]
 
 
 def subtract(a, b):
-    # Vector subtraction
+    """ Subtract vectors a and b.   (a - b) """
+
     return [a[0] - b[0], a[1] - b[1]]
 
 
 def times_scalar(t, a):
-    # Scalar times Vector
+    """ Multiply vector a with scalar t """
+
     return [t * a[0], t * a[1]]
 
 
@@ -199,7 +192,7 @@ def main():
     root.wm_attributes('-fullscreen', 1)
 
     app = Canv()
-    app.config(scrollregion=app.bbox('all'))
+    app.config(scrollregion=app.bbox('all'))  # No effect. Shuts up PEP8 check.
 
     root.mainloop()
 
