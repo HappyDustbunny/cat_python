@@ -24,7 +24,7 @@ class Canv(Canvas):
         self.mouse_xy = [self.width/2, self.height/2]
 
         self.canvas = Canvas(width=self.width - 25, height=self.height - 25,
-                             bg='blue')
+                             bg='light blue')
         # Mouse placement stop working if the canvas is fullscreen. Go figure.
 
         self.canvas.pack(fill='both', expand=True)
@@ -77,17 +77,21 @@ class Canv(Canvas):
         key = e.keysym
 
         if key == "Left" or key == "a":
-            self.contract_to(self.left_pt)
-            print("Left")
+            if self.left_pt[0] >= 0 or self.zoom < 1:
+                self.contract_to(self.left_pt)
+                print("Left")
         if key == "Right" or key == "d":
-            self.contract_to(self.center_pt)
-            print("Right")
+            if self.right_pt[0] <= self.width or self.zoom < 1:
+                self.contract_to(self.center_pt)
+                print("Right")
         if key == "Up" or key == "w":
-            self.contract_to(self.mid_top_left_pt)
-            print("Up")
+            if self.top_pt[1] >= 0 or self.zoom < 1:
+                self.contract_to(self.mid_top_left_pt)
+                print("Up")
         if key == "Down" or key == "s":
-            self.contract_to(self.mid_bottom_left_pt)
-            print("Down")
+            if self.bottom_pt[1] <= self.height or self.zoom < 1:
+                self.contract_to(self.mid_bottom_left_pt)
+                print("Down")
         if key == "e" or key == "q":
             self.reset()
         # if key == "a":
