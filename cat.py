@@ -1,10 +1,7 @@
+import pyautogui
+import sys
 from tkinter import Tk, Canvas  # , BOTH
 # from tkinter.ttk import Frame
-
-# http://zetcode.com/tkinter/snake/
-# https://docs.python.org/3/library/tkinter.html
-# https://effbot.org/tkinterbook/canvas.htm
-
 
 class Canv(Canvas):
 
@@ -14,6 +11,11 @@ class Canv(Canvas):
         self.pack()
 
     def initCanv(self):
+        # self.root = Tk()
+        # self.root.wait_visibility(self.root)
+        # self.root.wm_attributes('-alpha', 0.3)
+        # self.root.wm_attributes('-fullscreen', 1)
+
         self.draw_buffer = []
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
@@ -28,6 +30,7 @@ class Canv(Canvas):
         # Mouse placement stop working if the canvas is fullscreen. Go figure.
 
         self.canvas.pack(fill='both', expand=True)
+        # self.root.mainloop()
 
         self.after(100, self.get_offset)
 
@@ -97,7 +100,15 @@ class Canv(Canvas):
                 self.contract_to(self.mid_bottom_left_pt)
                 print("Down")
         if key == "e" or key == "q":
-            self.reset()
+            self.mouse_xy = self.center_pt
+            print(self.mouse_xy)
+            self.event_generate('<Motion>', warp=True,  # Place mouse pointer
+                                x=self.mouse_xy[0] - self.off_set_x,
+                                y=self.mouse_xy[1] - self.off_set_y)
+            self.focus_set()
+
+            sys.exit()
+            # self.reset()
         if key == '<space>':
             print("Yay")
 
@@ -191,10 +202,15 @@ def main():
     root.wm_attributes('-alpha', 0.3)
     root.wm_attributes('-fullscreen', 1)
 
+    # root.bind("r", root.iconify())
+    # pyautogui.moveTo(100, 200)
+    # pyautogui.click()
+
     app = Canv()
     app.config(scrollregion=app.bbox('all'))  # No effect. Shuts up PEP8 check.
 
     root.mainloop()
+    # root.destroy()
 
 
 if __name__ == '__main__':
