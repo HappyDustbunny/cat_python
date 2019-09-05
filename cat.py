@@ -1,27 +1,15 @@
 import pyautogui
-# import sys
-from tkinter import Tk, Canvas, Frame  # , BOTH
-# from tkinter.ttk import Frame
-
-
-# class Frame1(Frame):
-#     def __init__(self, master):
-#         Frame.__init__(self, master)
-#         self.canv = Canv()
-
+from tkinter import Tk, Canvas, Frame
 
 class Canv(Canvas):
 
     def __init__(self, master):
+
         super().__init__()
         self.initCanv()
         self.pack()
 
     def initCanv(self):
-        # self.root = Tk()
-        # self.root.wait_visibility(self.root)
-        # self.root.wm_attributes('-alpha', 0.3)
-        # self.root.wm_attributes('-fullscreen', 1)
 
         self.draw_buffer = []
 
@@ -30,7 +18,7 @@ class Canv(Canvas):
 
         self.width = self.master.winfo_screenwidth()
         self.height = self.master.winfo_screenheight()
-        print("Screen dimensions", self.width, self.height)
+
         self.mouse_xy = [self.width/2, self.height/2]
 
         self.canvas = Canvas(width=self.width - 10, height=self.height - 10,
@@ -58,8 +46,7 @@ class Canv(Canvas):
         self.diagonal_up = subtract(self.bottom_left, self.top_right)
         self.diagonal_down = subtract(self.top_left, self.bottom_right)
         self.upstart = 1
-        self.reset()
-        print("Canvas offset ", self.off_set_x, self.off_set_y)
+        self.reset()  # initialise first rhombe
         self.after(100, self.timer_event)
 
     def draw(self):
@@ -94,30 +81,27 @@ class Canv(Canvas):
         if key == "Left" or key == "a":
             if self.left_pt[0] >= 0 or self.zoom < 1:  # Stay on screen...
                 self.contract_to(self.left_pt)
-                print("Left")
+
         if key == "Right" or key == "d":
             if self.right_pt[0] <= self.width or self.zoom < 1:  # Excpt 1 time
                 self.contract_to(self.center_pt)
-                print("Right")
+
         if key == "Up" or key == "w":
             if self.top_pt[1] >= 0 or self.zoom < 1:
                 self.contract_to(self.mid_top_left_pt)
-                print("Up")
+
         if key == "Down" or key == "s":
             if self.bottom_pt[1] <= self.height or self.zoom < 1:
                 self.contract_to(self.mid_bottom_left_pt)
-                print("Down")
-        if key == "e" or key == "q":
-            self.mouse_xy = self.center_pt
-            print(self.mouse_xy)
-            self.event_generate('<Motion>', warp=True,  # Place mouse pointer
-                                x=self.mouse_xy[0] - self.off_set_x,
-                                y=self.mouse_xy[1] - self.off_set_y)
-            self.update()
-            self.after(200, self.master.destroy())
 
-            # sys.exit()
-            # self.reset()
+        if key == "e" and self.zoom > 0:
+            self.place_mouse_pointer()
+
+        if key == "q" and self.zoom == 0:
+            self.master.destroy()
+        elif key == "q":
+            self.reset()  # Restart rhombe
+
         if key == '<space>':
             print("Yay")
 
@@ -186,7 +170,19 @@ class Canv(Canvas):
 
         self.zoom += 1  # Place pointer if the rhombe is only a few pixels
         if self.zoom > 8:
-            self.reset()
+            self.place_mouse_pointer()
+
+    def place_mouse_pointer(self):
+
+        self.mouse_xy = self.center_pt
+
+        self.event_generate('<Motion>', warp=True,  # Place mouse pointer
+                            x=self.mouse_xy[0] - self.off_set_x,
+                            y=self.mouse_xy[1] - self.off_set_y)
+        self.update()
+
+        self.after(200, self.master.destroy())  # Get rid of canvas
+
 
 
 def add(a, b):
@@ -214,17 +210,14 @@ def main():
     root.wm_attributes('-alpha', 0.3)
     root.wm_attributes('-fullscreen', 1)
 
-    # pyautogui.moveTo(100, 200)
-    # root.bind("r", root.iconify())
-    # pyautogui.click()
-
     app = Canv(root)
-    # app = Frame1(root)
-    # app.config(scrollregion=app.bbox('all'))  # No effect. Shuts up PEP8
-    root.mainloop()
-    pyautogui.click()
-    # root.destroy()
 
+    root.mainloop()
+
+    pyautogui.click()
+
+    # Move the mousepointer to the upper rigth corner
+    pyautogui.moveTo(pyautogui.size()[0] - 50, 50)
 
 if __name__ == '__main__':
     main()
