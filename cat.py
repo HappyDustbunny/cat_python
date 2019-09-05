@@ -1,7 +1,14 @@
-import pyautogui
-import sys
-from tkinter import Tk, Canvas  # , BOTH
+# import pyautogui
+# import sys
+from tkinter import Tk, Canvas, Frame  # , BOTH
 # from tkinter.ttk import Frame
+
+
+class Frame1(Frame):
+    def __init__(self, master):
+        Frame.__init__(self, master)
+        self.canv = Canv()
+
 
 class Canv(Canvas):
 
@@ -17,6 +24,7 @@ class Canv(Canvas):
         # self.root.wm_attributes('-fullscreen', 1)
 
         self.draw_buffer = []
+
         self.master.title("Cat")
         self.bind_all("<Key>", self.key_pressed)
 
@@ -105,12 +113,15 @@ class Canv(Canvas):
             self.event_generate('<Motion>', warp=True,  # Place mouse pointer
                                 x=self.mouse_xy[0] - self.off_set_x,
                                 y=self.mouse_xy[1] - self.off_set_y)
-            self.focus_set()
+            self.end()
 
-            sys.exit()
+            # sys.exit()
             # self.reset()
         if key == '<space>':
             print("Yay")
+
+    def end(self):
+        root.quit()
 
     def reset(self):
         """ Clear canvas. Set corners and midpoint for screenfilling rhombe"""
@@ -206,9 +217,9 @@ def main():
     # pyautogui.moveTo(100, 200)
     # pyautogui.click()
 
-    app = Canv()
-    app.config(scrollregion=app.bbox('all'))  # No effect. Shuts up PEP8 check.
-
+    # app = Canv(root)
+    app = Frame1(root)
+    # app.config(scrollregion=app.bbox('all'))  # No effect. Shuts up PEP8
     root.mainloop()
     # root.destroy()
 
