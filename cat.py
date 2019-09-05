@@ -1,5 +1,6 @@
 import pyautogui
-from tkinter import Tk, Canvas, Frame
+from tkinter import Tk, Canvas
+
 
 class Canv(Canvas):
 
@@ -62,7 +63,7 @@ class Canv(Canvas):
                 start = end
                 continue
             self.canvas.create_line(start[0], start[1], end[0], end[1],
-                                    width=2, fill="red", dash=(8, 8))
+                                    width=2, fill="red")
 
             self.canvas.pack(side='top', fill='both', expand=True)
             start = end
@@ -104,9 +105,6 @@ class Canv(Canvas):
 
         if key == '<space>':
             print("Yay")
-
-    def end(self):
-        root.quit()
 
     def reset(self):
         """ Clear canvas. Set corners and midpoint for screenfilling rhombe"""
@@ -184,7 +182,6 @@ class Canv(Canvas):
         self.after(200, self.master.destroy())  # Get rid of canvas
 
 
-
 def add(a, b):
     """ Add vectors a and b """
 
@@ -218,6 +215,7 @@ def main():
 
     # Move the mousepointer to the upper rigth corner
     pyautogui.moveTo(pyautogui.size()[0] - 50, 50)
+
 
 if __name__ == '__main__':
     main()
