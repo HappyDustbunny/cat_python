@@ -1,18 +1,18 @@
-# import pyautogui
+import pyautogui
 # import sys
 from tkinter import Tk, Canvas, Frame  # , BOTH
 # from tkinter.ttk import Frame
 
 
-class Frame1(Frame):
-    def __init__(self, master):
-        Frame.__init__(self, master)
-        self.canv = Canv()
+# class Frame1(Frame):
+#     def __init__(self, master):
+#         Frame.__init__(self, master)
+#         self.canv = Canv()
 
 
 class Canv(Canvas):
 
-    def __init__(self):
+    def __init__(self, master):
         super().__init__()
         self.initCanv()
         self.pack()
@@ -113,7 +113,8 @@ class Canv(Canvas):
             self.event_generate('<Motion>', warp=True,  # Place mouse pointer
                                 x=self.mouse_xy[0] - self.off_set_x,
                                 y=self.mouse_xy[1] - self.off_set_y)
-            self.end()
+            self.update()
+            self.after(200, self.master.destroy())
 
             # sys.exit()
             # self.reset()
@@ -213,14 +214,15 @@ def main():
     root.wm_attributes('-alpha', 0.3)
     root.wm_attributes('-fullscreen', 1)
 
-    # root.bind("r", root.iconify())
     # pyautogui.moveTo(100, 200)
+    # root.bind("r", root.iconify())
     # pyautogui.click()
 
-    # app = Canv(root)
-    app = Frame1(root)
+    app = Canv(root)
+    # app = Frame1(root)
     # app.config(scrollregion=app.bbox('all'))  # No effect. Shuts up PEP8
     root.mainloop()
+    pyautogui.click()
     # root.destroy()
 
 

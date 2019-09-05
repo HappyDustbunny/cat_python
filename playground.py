@@ -7,17 +7,21 @@ class CloseAfterFinishFrame(Frame):  # Diz que herda os parametros de Frame
         Frame.__init__(self, master)  # Inicializa com os parametros acima!!
         Label(self, text="Hey", font=("Arial", 16)).pack()
         button = Button(self, text="the End",
-                        command=self.CloseWindow, font=("Arial", 12))
+                        command=self.CloseWindow(master), font=("Arial", 12))
         button.pack()
+        self.canv = Canv()
+        # self.bind_all("<Key>", self.key_pressed)
         # Canv(self.master)
-        NewFrame(self.master)
+        # NewFrame(self.master)
         self.pack()
 
-    def CloseWindow(self):
+    def CloseWindow(self, master):
         # root.quit()
         # self.button.config(state=DISABLED)
-        self.forget()
-        NewFrame(self.master)
+        self.master.destroy()
+        # self.forget()
+        # NewFrame(self.master)
+
 
 
 class NewFrame(Frame):
@@ -36,21 +40,20 @@ class Canv(Canvas):
     def __init__(self):
         super().__init__()
     #     self.initCanv(master)
-    #     self.pack()
+        # self.pack()
     #
     # def initCanv(self):
-        self.master.title("Cat")
-        self.bind_all("<Key>", self.key_pressed)
-
-        self.width = 500  # self.master.winfo_screenwidth()
-        self.height = 500  # self.master.winfo_screenheight()
-        print("Screen dimensions", self.width, self.height)
-        self.mouse_xy = [self.width/2, self.height/2]
-
-        self.canvas = Canvas(width=self.width - 10, height=self.height - 10,
-                             bg='light blue')
+        # self.master.title("Cat")
+        # self.bind_all("<Key>", self.key_pressed)
+        #
+        # self.width = 500  # self.master.winfo_screenwidth()
+        # self.height = 500  # self.master.winfo_screenheight()
+        # print("Screen dimensions", self.width, self.height)
+        # self.mouse_xy = [self.width/2, self.height/2]
+        #
+        self.canvas = Canvas(width=400, height=400)
         # Mouse placement stop working if the canvas is fullscreen. Go figure.
-        self.canvas.create_line(0, 0, 450, 450,
+        self.canvas.create_line(0, 0, 350, 350,
                                 width=2, fill="red", dash=(8, 8))
 
         self.canvas.pack(fill='both', expand=True)
