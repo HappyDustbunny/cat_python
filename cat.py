@@ -1,6 +1,9 @@
 import pyautogui
 from tkinter import Tk, Canvas
 
+global l_button
+l_button = True
+
 
 class Canv(Canvas):
 
@@ -76,6 +79,7 @@ class Canv(Canvas):
         # The first number is time between updates in milliseconds.
 
     def key_pressed(self, e):
+        global l_button
 
         key = e.keysym
 
@@ -96,6 +100,10 @@ class Canv(Canvas):
                 self.contract_to(self.mid_bottom_left_pt)
 
         if key == "e" and self.zoom > 0:
+            self.place_mouse_pointer()
+
+        if key == "r" and self.zoom > 0:
+            l_button = False
             self.place_mouse_pointer()
 
         if key == "q" and self.zoom == 0:
@@ -211,10 +219,12 @@ def main():
 
     root.mainloop()
 
-    pyautogui.click()
-
-    # Move the mousepointer to the upper rigth corner
-    pyautogui.moveTo(pyautogui.size()[0] - 50, 50)
+    if l_button:
+        pyautogui.click()
+        # Move the mousepointer to the upper rigth corner
+        pyautogui.moveTo(pyautogui.size()[0] - 50, 50)
+    else:
+        pyautogui.click(button='right')
 
 
 if __name__ == '__main__':
