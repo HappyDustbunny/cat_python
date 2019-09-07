@@ -66,7 +66,7 @@ class Canv(Canvas):
                 start = end
                 continue
             self.canvas.create_line(start[0], start[1], end[0], end[1],
-                                    width=3, fill="blue2")
+                                    width=4 - self.zoom/2, fill="blue2")
 
             self.canvas.pack(side='top', fill='both', expand=True)
             start = end
