@@ -30,7 +30,6 @@ class Canv(Canvas):
         # Mouse placement stop working if the canvas is fullscreen. Go figure.
 
         self.canvas.pack(fill='both', expand=True)
-        # self.root.mainloop()
 
         self.after(100, self.get_offset)
 
@@ -99,10 +98,10 @@ class Canv(Canvas):
             if self.bottom_pt[1] <= self.height or self.zoom < 1:
                 self.contract_to(self.mid_bottom_left_pt)
 
-        if key == "e" and self.zoom > 0:
+        if key == "e" and self.zoom > 0:  # Click
             self.place_mouse_pointer()
 
-        if key == "r" and self.zoom > 0:
+        if key == "r" and self.zoom > 0:  # Right click
             l_button = False
             self.place_mouse_pointer()
 
@@ -110,9 +109,6 @@ class Canv(Canvas):
             self.master.destroy()
         elif key == "q":
             self.reset()  # Restart rhombe
-
-        if key == '<space>':
-            print("Yay")
 
     def reset(self):
         """ Clear canvas. Set corners and midpoint for screenfilling rhombe"""
@@ -174,8 +170,8 @@ class Canv(Canvas):
                                                    left_point)))
         self.mouse_xy = self.center_pt
 
-        self.zoom += 1  # Place pointer if the rhombe is only a few pixels
-        if self.zoom > 8:
+        self.zoom += 1
+        if self.zoom > 8:  # Place pointer if the rhombe is only a few pixels
             self.place_mouse_pointer()
 
     def place_mouse_pointer(self):
