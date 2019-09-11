@@ -21,7 +21,12 @@ To right-click press "r" instead of "e".
 Press "q" to reset rhombes.
 
 To start using a hot key on \
-Ubuntu 18.04: Download the cat_ubuntu standalone file and place it somewhere. \
+*Ubuntu 18.04:* Download the _cat_ubuntu_ standalone file and place it in a folder somewhere. \
+Open a terminal, go to the folder and change the program to executable with the command _chmod 555 cat._ \
 Go to Settings, Devices, Keyboard and scroll to the bottom to of \
-the list of shortcuts. Press + and add a shortcut. I use shift + ctrl + u. \
-The Command should be the path to cat_ubuntu (Eg /home/user/Desktop/cat_ubuntu)
+the list of shortcuts. Press + and add a shortcut. I use _shift + ctrl + u._ \
+The Command should be the path to _cat_ubuntu_ (Eg /home/user/Desktop/cat_ubuntu)
+
+*Windows 10:* Download the _cat_win10_ folder and place it somewhere. \
+Go into the folder in the file explorer and make a shortcut by right-clicking on the program *cat* \
+Move the shortcut to the Desktop, right-click the shortcut and add a keyboard shortcut. I use _shift + ctrl + u._
